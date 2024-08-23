@@ -1,0 +1,21 @@
+<div class="container h-100 w-100 justify-content-center">
+
+    <h2>Your Dasboard</h2>
+
+
+    {{#each blogs}}
+    <div class="posts container h-100 w-100 justify-content-center">
+
+        <a id="topic" href="/dashboard/{{id}}">
+            <span id="headline"><strong>Topic:</strong> {{this.topic}}</span><br>
+        </a>
+        <span> {{this.content}}</span>
+    </div><br>
+
+    {{/each}}
+
+    <a href="/newblogpost">
+
+        <button class="btn btn-primary">New blog post</button>
+    </a>
+</div>
