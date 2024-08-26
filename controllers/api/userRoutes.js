@@ -1,108 +1,145 @@
 const router = require("express").Router();
-const { User } = require("../../models");
-const BlogPosts = require('../../models/blogPost');
+const { User, BlogPosts, Comment } = require("../../models");
+
 
 // Create new user
 router.post("/signup", async (req, res) => {
-    try {
-      const userData = await User.create({
-        username: req.body.username,
-        password: req.body.password,
-      });
-      req.session.save(() => {
-        req.session.loggedIn = true;  
-        res.status(200).json(userData);
-      });
-    } catch (err) {
-      console.log(err);
-      res.status(500).json(err);
-    }
-  });
+  try {
+    const userData = await User.create({
+      username: req.body.username,
+      password: req.body.password,
+    });
+    console.log("test: ", userData.id)
+    req.session.save(() => {
+      req.session.loggedIn = true;
+      req.session.userId = userData.id;
+      res.status(200).json(userData);
+    });
+    console.log(req.session)
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+});
 
-  // Login existing user
-  router.post("/login", async (req, res) => {
-    try {
-      const userData = await User.findOne({
-        where: {
-          username: req.body.username,
-        },
-      });
-      if (!userData) {
-        res
-          .status(400)
-          .json({ message: "Incorrect username or password. Please try again!" });
-        return;
-      }
+// Login existing user
 
-      const validPassword = await userData.checkPassword(req.body.password);
-
-      if (!validPassword) {
-        res
-          .status(400)
-          .json({ message: "Incorrect username or password. Please try again!" });
-        return;
-      }
-
-      req.session.save(() => {
-        req.session.loggedIn = true;  
-        req.session.userID = userData.id;
-        res
-          .status(200)
-          .json({ user: userData, message: "You are now logged in!" });
-
-      });
-    } catch (err) {
-      console.log(err);
-      res.status(500).json(err);
-    }
-  });
-
-  // Dashoard
-  router.get("/dashboard ", async (req,res) => {
-    const userData = await User.findByPk({
+router.post("/login", async (req, res) => {
+  try {
+    const userData = await User.findOne({
       where: {
-        id: 1,
+        username: req.body.username,
       },
-      include: [
-        {
-          model: BlogPosts,
-          attributes: [
-            "id",
-            "topic",
-            "content",
-            "user_id",
-          ],
-        },
-      ],
-    }).catch((err) => {
-      res.json(err);
-  });
+    });
 
-  //   const pageData = await BlogPosts.findAll(
-  //     { 
-  //     where: {
-  //       user_id: 1,
-  //     } }
-  // ).catch((err) => {
-  //     res.json(err);
-  // });
-
-    res.render("dashboard", {      
-      user: userData,
-      userBlogs: pageData
-    })
-  });
-
-  // Logout
-  router.post("/logout", (req, res) => {
-    if (req.session.loggedIn) {
-      req.session.destroy(() => {
-        res.status(204).end();
-        console.log("logged out")
-      });
-    } else {
-      res.status(404).end();
+    if (!userData) {
+      res
+        .status(400)
+        .json({ message: 'Incorrect email or password. Please try again!' });
+      return;
     }
-  });
 
-  module.exports = router;
+    const validPassword = await userData.checkPassword(req.body.password);
+
+    if (!validPassword) {
+      res
+        .status(400)
+        .json({ message: 'Incorrect email or password. Please try again!' });
+      return;
+    }
+
+    req.session.save(() => {
+      req.session.loggedIn = true;
+      req.session.userId = userData.id;
+      res
+        .status(200)
+        .json({ user: userData, message: "You are now logged in!" });
+
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+});
+
+// Save comment on existing post
+router.post("/savecomment/:id", async (req, res) => {
+
+  try {
+    const commentData = await Comment.create({
+      comment_content: req.body.commentText,
+      user_id: req.session.userId,
+      blog_id: req.params.id,
+
+    });
+    res.status(200).json(commentData)
+  } catch (err) {
+    res.status(400).json(err)
+    console.log(err)
+  }
+});
+
+// Save new blog post
+router.post("/saveblogpost", async (req, res) => {
+  try {
+    const newPostData = await BlogPosts.create({
+      topic: req.body.blogTopic,
+      content: req.body.blogText,
+      user_id: req.session.userId,
+    });
+    res.status(200).json(newPostData)
+  } catch (err) {
+    res.status(400).json(err)
+    console.log(err)
+  }
+});
+
+// Update blog post
+router.put("/dashboard/:id", async (req, res) => {
+  try {
+    const blogData = await BlogPosts.update(
+      {
+        topic: req.body.postTopic,
+        content: req.body.postContent,
+      },
+      {
+        where: {
+          id: req.params.id,
+        }
+      }
+    );
+    res.status(200).json(blogData);
+  } catch (err) {
+    res.status(400).json(err)
+    console.log(err)
+  }
+})
+
+// Delete Blog Post
+router.delete("/dashboard/:id", async (req, res) => {
+  try {
+    const deletePost = await BlogPosts.destroy({
+      where: {
+        id: req.params.id,
+      }
+    });
+    res.status(200).json(deletePost);
+  } catch (err) {
+    res.status(400).json(err)
+    console.log(err)
+  }
+});
+
+// Logout
+router.post("/logout", (req, res) => {
+  if (req.session.loggedIn) {
+    req.session.destroy(() => {
+      res.status(204).end();
+      console.log("logged out")
+    });
+  } else {
+    res.status(404).end();
+  }
+});
+
+module.exports = router;

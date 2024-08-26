@@ -1,3 +1,5 @@
-{{#each existingBlog as |blogs|}}
-{{> homepage-details}}
-{{/each}}
+<div class="posts container h-100 w-100 justify-content-center home">
+    <a id="topic" href="/homepage/{{id}}">
+        <span>{{topic}} on {{format_date createdAt}}</span>
+    </a>
+</div>
