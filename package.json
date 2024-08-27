@@ -4,8 +4,7 @@
   "main": "server.js",
   "scripts": {
     "seed": "node seeds/index.js",
-    "start": "node server.js",
-    "build": "azure"
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
