@@ -12,7 +12,7 @@ run `npm install`
 
 `npm run start`
 
-![alt text](./Assets/screenshot2.png) 
+![alt text](./assets/homescreen.png) 
 
 [Heroku Link](https://tech-blog-e9b8389da074.herokuapp.com/)
 ## Credits
