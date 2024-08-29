@@ -21,15 +21,23 @@ BlogPosts.init(
             }
         },
         content: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
             allowNull: false,
-        }
+        },
+        excerpt: {
+            type: DataTypes.VIRTUAL, // Use VIRTUAL type for computed columns
+            get() {
+              const content = this.getDataValue("content");
+              return content ? content.substring(0, 200) + "..." : "";
+            },
+          },
     },
     {
         sequelize,
         freezeTableName: true,
         underscored: true,
         modelName: 'blogData',
+        underscored: true,
       }
     
 );

@@ -2,18 +2,37 @@ const router = require('express').Router();
 const { User, BlogPosts, Comment } = require('../models');
 const withAuth = require('../utils/auth');
 
+// router.get("/", async (req, res) => {
+//     const pageData = await BlogPosts.findAll(
+//         { raw: true }
+//     ).catch((err) => {
+//         res.json(err);
+//     });
+
+//     res.render("main", {
+//         existingBlog: pageData,
+//     })
+
+// });
+
 router.get("/", async (req, res) => {
-    const pageData = await BlogPosts.findAll(
-        { raw: true }
-    ).catch((err) => {
-        res.json(err);
-    });
-
-    res.render("main", {
-        existingBlog: pageData,
-    })
-
+    try {
+        const blogPosts = await BlogPosts.findAll();
+        const blogPostsWithExcerpt = blogPosts.map((blogPost) => {
+            const excerpt = blogPost.get("excerpt");
+            console.log(`Excerpt for blog post ${blogPost.topic}: ${excerpt}`);
+            return {
+                ...blogPost.dataValues,
+                excerpt,
+            };
+        });
+        res.render("main", { existingBlog: blogPostsWithExcerpt });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Error fetching blog posts" });
+    }
 });
+
 
 router.get("/login", async (req, res) => {
     res.render("login")
@@ -27,7 +46,7 @@ router.get("/dashboard", withAuth, async (req, res) => {
     const user_id = req.session.userId;
     const pageData = await BlogPosts.findAll(
         {
-            raw: true,
+            // raw: true,
             where: {
                 user_id: user_id,
             }
@@ -36,6 +55,14 @@ router.get("/dashboard", withAuth, async (req, res) => {
         res.json(err);
         console.log(err)
     });
+        // Add a new property to each blog post object with the excerpt
+        const blogPostsWithExcerpt = pageData.map((blogPost) => {
+            const excerpt = blogPost.get("excerpt"); 
+            return {
+                ...blogPost.dataValues,
+                excerpt,
+            };
+        });
     const userData = await User.findOne({
         raw: true,
         attributes: {
@@ -48,7 +75,7 @@ router.get("/dashboard", withAuth, async (req, res) => {
         }
     });
     res.render("dashboard", {
-        blogs: pageData,
+        blogs: blogPostsWithExcerpt,
         username: userData.username,
         loggedIn: req.session.loggedIn,
     })
@@ -56,14 +83,22 @@ router.get("/dashboard", withAuth, async (req, res) => {
 
 router.get("/homepagestart", withAuth, async (req, res) => {
     const pageData = await BlogPosts.findAll(
-        { raw: true, }
+        // { raw: true, }
     ).catch((err) => {
         res.json(err);
     });
+            // Add a new property to each blog post object with the excerpt
+            const blogPostsWithExcerpt = pageData.map((blogPost) => {
+                const excerpt = blogPost.get("excerpt"); 
+                return {
+                    ...blogPost.dataValues,
+                    excerpt,
+                };
+            });
 
     res.render("homepagestart", {
         loggedIn: req.session.loggedIn,
-        blogs: pageData,
+        blogs: blogPostsWithExcerpt,
     })
 
 });
