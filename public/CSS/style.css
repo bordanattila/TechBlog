@@ -1,6 +1,8 @@
 :root {
   --navbar: #86938f;
   --page: #000;
+  --neonGreen: #0D1;
+  --neonBlue: #29f;
 }
 
 body {
@@ -43,12 +45,8 @@ nav {
   border: 1px solid rgba(255, 255, 255, 0.42);
 }
 
-p {
+p, span {
   color: #0EC;
-}
-
-a {
-  color: #0D1;
 }
 
 a:hover {
@@ -60,14 +58,22 @@ h1 {
   font-size: 4rem;
 }
 
-a,
-span {
-  color: #0D1;
+.author {
+  color: var(--neonGreen);
+} 
+
+.publishDate {
+  color: var(--neonBlue);
 }
 
-nav,
+nav >
 a {
   margin: 30px;
+  color: var(--neonGreen);
+}
+
+.textarea {
+  background-color: #929493;
 }
 
 nav,
@@ -76,7 +82,7 @@ nav,
 }
 
 #headline {
-  color: #29f;
+  color: var(--neonBlue);
 }
 
 #topic {
@@ -109,11 +115,9 @@ nav,
 .posts {
   background-color: var(--navbar);
   /* From https://css.glass */
-  background: rgba(255, 255, 255, 0.22);
-  border-radius: 11px;
+  background: rgba(52, 58, 64, 1);
+  border-radius: 16px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(4.1px);
-  -webkit-backdrop-filter: blur(4.1px);
   border: 1px solid rgba(255, 255, 255, 0.42);
 }
 
@@ -123,7 +127,7 @@ nav,
 
 .btn {
   text-decoration: none;
-  border: 3px solid #0D1;
+  border: 3px solid var(--neonGreen);;
   position: relative;
 }
 

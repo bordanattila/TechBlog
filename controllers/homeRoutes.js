@@ -82,17 +82,25 @@ router.get("/dashboard", withAuth, async (req, res) => {
 });
 
 router.get("/homepagestart", withAuth, async (req, res) => {
-    const pageData = await BlogPosts.findAll(
-        // { raw: true, }
+    const pageData = await BlogPosts.findAll({
+        include: [
+            {
+                model: User,
+                attributes: ["username"],
+                as: 'user'
+            }
+        ]
+    }
     ).catch((err) => {
         res.json(err);
     });
-            // Add a new property to each blog post object with the excerpt
+            // Add a new property to each blog post object with the excerpt and user name
             const blogPostsWithExcerpt = pageData.map((blogPost) => {
                 const excerpt = blogPost.get("excerpt"); 
                 return {
                     ...blogPost.dataValues,
                     excerpt,
+                    username: blogPost.user.username, // access the username
                 };
             });
 
@@ -110,9 +118,8 @@ router.get("/homepage/:id", withAuth, async (req, res) => {
             include: [
                 {
                     model: User,
-                    attributes: [
-                        "username",
-                    ]
+                    attributes: ["username"],
+                    as: 'user'
                 }
             ],
         });

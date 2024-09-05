@@ -37,7 +37,6 @@ BlogPosts.init(
         freezeTableName: true,
         underscored: true,
         modelName: 'blogData',
-        underscored: true,
       }
     
 );
