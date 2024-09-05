@@ -2,8 +2,8 @@
     <div class="posts container h-100 w-100 justify-content-center">
 
         <span id="headline">On the topic of {{blogData.topic}} by <strong>{{blogUserName}}</strong> on {{format_date
-            blogData.createdAt}}</spam><br>
-            <span>{{blogData.content}}</spam>
+            blogData.createdAt}}</span><br>
+            <span class="blog-content">{{{blogData.content}}}</span>
 
     </div><br>
     {{#each comments}}

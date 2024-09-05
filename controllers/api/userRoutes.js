@@ -81,10 +81,14 @@ router.post("/savecomment/:id", async (req, res) => {
 
 // Save new blog post
 router.post("/saveblogpost", async (req, res) => {
+  textToFormat = req.body.blogText
+  function formatText(textToFormat) {
+  return textToFormat.replace(/\n/g, '<br>');
+  }
   try {
     const newPostData = await BlogPosts.create({
       topic: req.body.blogTopic,
-      content: req.body.blogText,
+      content: textToFormat,
       user_id: req.session.userId,
     });
     res.status(200).json(newPostData)
